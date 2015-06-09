@@ -131,12 +131,17 @@ public:
 
   void setUseDeviceTimer(bool enable);
 
-protected:
-  void shutdown();
-
   boost::shared_ptr<openni::VideoStream> getIRVideoStream() const throw (OpenNI2Exception);
   boost::shared_ptr<openni::VideoStream> getColorVideoStream() const throw (OpenNI2Exception);
   boost::shared_ptr<openni::VideoStream> getDepthVideoStream() const throw (OpenNI2Exception);
+  mutable boost::shared_ptr<openni::VideoStream> ir_video_stream_;
+  mutable boost::shared_ptr<openni::VideoStream> color_video_stream_;
+  mutable boost::shared_ptr<openni::VideoStream> depth_video_stream_;
+  
+protected:
+  void shutdown();
+
+
 
   boost::shared_ptr<openni::Device> openni_device_;
   boost::shared_ptr<openni::DeviceInfo> device_info_;
@@ -145,9 +150,7 @@ protected:
   boost::shared_ptr<OpenNI2FrameListener> color_frame_listener;
   boost::shared_ptr<OpenNI2FrameListener> depth_frame_listener;
 
-  mutable boost::shared_ptr<openni::VideoStream> ir_video_stream_;
-  mutable boost::shared_ptr<openni::VideoStream> color_video_stream_;
-  mutable boost::shared_ptr<openni::VideoStream> depth_video_stream_;
+
 
   mutable std::vector<OpenNI2VideoMode> ir_video_modes_;
   mutable std::vector<OpenNI2VideoMode> color_video_modes_;

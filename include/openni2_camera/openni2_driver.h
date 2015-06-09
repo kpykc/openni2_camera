@@ -54,6 +54,8 @@
 
 #include <ros/ros.h>
 
+ #include <OpenNI.h>
+
 namespace openni2_wrapper
 {
 
@@ -157,6 +159,9 @@ private:
 
   bool auto_exposure_;
   bool auto_white_balance_;
+
+  int exposure_;
+  int gain_;
 
   bool ir_subscribers_;
   bool color_subscribers_;

@@ -9,7 +9,22 @@ find_package(PkgConfig)
 
 pkg_check_modules(PC_OPENNI2 libopenni2)
 if (NOT PC_OPENNI2_FOUND)
-  pkg_check_modules(PC_OPENNI2 REQUIRED openni2)
+  # pkg_check_modules(PC_OPENNI2 REQUIRED openni2)
+  include_directories ( /usr/local/include/ni2 )
+  link_directories ( /usr/local/lib/ni2 )
+  find_package (OpenCV REQUIRED)
+
+  find_path(OpenNI2_INCLUDE_PATH NAMES OpenNI.h
+    PATH_SUFFIXES ni2
+    PATHS
+      /usr/include
+      /usr/local/include)
+
+  find_library(OpenNI2_LIBRARY NAMES OpenNI2 libOpenNI2
+    PATHS
+      /usr/lib
+      /usr/local/lib
+      /usr/local/lib/ni2)
 endif()
 
 generate_dynamic_reconfigure_options(cfg/OpenNI2.cfg)
@@ -25,9 +40,10 @@ include_directories(include
                     ${catkin_INCLUDE_DIRS} 
                     ${Boost_INCLUDE_DIRS}
                     ${PC_OPENNI2_INCLUDE_DIRS}
+                    /usr/local/include/ni2
                     )
 
-link_directories(${PC_OPENNI2_LIBRARY_DIRS})
+link_directories(${PC_OPENNI2_LIBRARY_DIRS} /usr/local/lib/ni2)
 
 add_library(openni2_wrapper
    src/openni2_convert.cpp
@@ -38,7 +54,7 @@ add_library(openni2_wrapper
    src/openni2_exception.cpp
    src/openni2_video_mode.cpp
 )
-target_link_libraries(openni2_wrapper openni2_wrapper ${catkin_LIBRARIES} ${PC_OPENNI2_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries(openni2_wrapper openni2_wrapper ${catkin_LIBRARIES} ${OpenNI2_LIBRARY} ${Boost_LIBRARIES} )
 
 add_executable(test_wrapper test/test_wrapper.cpp )
 target_link_libraries(test_wrapper openni2_wrapper ${Boost_LIBRARIES})
@@ -61,9 +77,9 @@ add_executable(openni2_camera_node
 target_link_libraries(openni2_camera_node openni2_driver_lib ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
 add_dependencies(openni2_camera_node ${PROJECT_NAME}_gencfg)
 
-add_executable(usb_reset src/usb_reset.c)
+#add_executable(usb_reset src/usb_reset.c)
 
-install(TARGETS openni2_wrapper openni2_camera_nodelet openni2_camera_node openni2_driver_lib usb_reset
+install(TARGETS openni2_wrapper openni2_camera_nodelet openni2_camera_node openni2_driver_lib #usb_reset
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
